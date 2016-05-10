@@ -1,5 +1,4 @@
 import React from 'react';
-import { AppContainer } from 'react-hot-loader';
 import { render } from 'react-dom';
 import { hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
@@ -11,14 +10,16 @@ const history = syncHistoryWithStore(hashHistory, store);
 
 const rootElement = document.getElementById('root');
 
-render(
-  <AppContainer>
-    <App store={store} history={history} />
-  </AppContainer>,
-  rootElement
-);
+if (process.env.NODE_ENV !== 'production' && module.hot) {
+  const AppContainer = require('react-hot-loader').AppContainer;
 
-if (module.hot) {
+  render(
+    <AppContainer>
+      <App store={store} history={history} />
+    </AppContainer>,
+    rootElement
+  );
+
   module.hot.accept('./app', () => {
     const NextApp = require('./app');
 
@@ -29,4 +30,9 @@ if (module.hot) {
       rootElement
     );
   });
+} else {
+  render(
+    <App store={store} history={history} />,
+    rootElement
+  );
 }
